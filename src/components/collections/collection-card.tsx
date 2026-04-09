@@ -117,5 +117,4 @@ export function CollectionCard({ collection }: CollectionCardProps) {
       </div>
     </div>
   );
-  );
 }
