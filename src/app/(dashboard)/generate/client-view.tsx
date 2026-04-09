@@ -57,10 +57,10 @@ export function GenerationStudioClient({
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[var(--color-cream)] dark:bg-black">
         <ImageIcon size={48} className="text-[var(--color-light-gray)] mb-4" />
-        <h2 className="font-display text-2xl text-[var(--color-charcoal)] dark:text-[var(--color-cream)] mb-2">
+        <h2 className="font-display text-2xl text-[var(--color-charcoal)] dark:text-[var(--color-cream)] mb-2 tracking-tight">
           Nenhuma peça encontrada
         </h2>
-        <p className="text-[var(--color-warm-gray)] max-w-md mb-6">
+        <p className="w-full max-w-md text-[var(--color-warm-gray)] leading-relaxed mb-8 text-balance">
           Para gerar lookbooks, você primeiro precisa criar uma coleção e fazer o upload de uma peça de roupa.
         </p>
         <Button onClick={() => router.push("/collections")} variant="primary">

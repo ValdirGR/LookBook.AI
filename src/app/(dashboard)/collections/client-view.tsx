@@ -39,7 +39,7 @@ export function CollectionsClientView({ collections }: { collections: Collection
           <h3 className="font-display text-xl mb-2 text-[var(--color-charcoal)] dark:text-[var(--color-cream)]">
             Nenhuma coleção ainda
           </h3>
-          <p className="text-sm text-[var(--color-warm-gray)] max-w-md leading-relaxed mb-8">
+          <p className="w-full max-w-md text-sm text-[var(--color-warm-gray)] leading-relaxed mb-8 text-balance">
             Crie sua primeira coleção para começar a organizar suas peças e gerar lookbooks editoriais incríveis.
           </p>
           <Button onClick={() => setIsDialogOpen(true)} variant="primary" size="lg">
