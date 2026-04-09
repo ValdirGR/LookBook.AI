@@ -38,4 +38,11 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# agent/docs local
+.agent/
+.docs/
+
+# test files
+test-prisma.ts
 next-env.d.ts

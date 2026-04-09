@@ -1,0 +1,358 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+// ─── ENUMS ──────────────────────────────────────────
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum BrandMemberRole {
+  OWNER
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+enum CollectionStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum GarmentStatus {
+  PENDING
+  ANALYZING
+  READY_TO_GENERATE
+  GENERATING
+  GENERATED
+  FAILED
+}
+
+enum ImageStatus {
+  GENERATING
+  QUALITY_CHECK
+  READY
+  FAILED
+  REJECTED
+  REGENERATING
+}
+
+enum VariationType {
+  FRONTAL
+  LATERAL
+  MOVIMENTO
+  CLOSE
+  PLANO_ABERTO
+  TRES_QUARTOS
+}
+
+enum Composition {
+  WALKING
+  STANDING
+  INTERACTING
+  CLOSE_UP
+  SITTING
+  LEANING
+}
+
+enum GenerationMode {
+  EDITORIAL
+  CLEAN
+  LIFESTYLE
+}
+
+enum FramingType {
+  FULL_BODY
+  HALF_BODY
+  DETAIL
+  WIDE
+}
+
+enum PlanType {
+  FREE
+  STARTER
+  PRO
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  TRIALING
+  PAUSED
+}
+
+enum CreditOperation {
+  SUBSCRIPTION_RENEWAL
+  CREDIT_PURCHASE
+  GENERATION_DEBIT
+  REFUND
+  MANUAL_ADJUSTMENT
+  BONUS
+}
+
+enum GarmentType {
+  VESTIDO
+  BLUSA
+  CAMISA
+  CAMISETA
+  BLAZER
+  JAQUETA
+  CASACO
+  CALCA
+  SAIA
+  SHORT
+  MACACAO
+  CONJUNTO
+  BODY
+  CROPPED
+  CARDIGAN
+  COLETE
+  OUTRO
+}
+
+// ─── MODELS ─────────────────────────────────────────
+
+model User {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  authId    String   @unique @map("auth_id")
+  email     String   @unique
+  fullName  String?  @map("full_name")
+  avatarUrl String?  @map("avatar_url")
+  role      UserRole @default(USER)
+  notificationPrefs Json? @default("{}") @map("notification_prefs")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  memberships BrandMember[]
+
+  @@map("users")
+}
+
+model Brand {
+  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                String
+  slug                String   @unique
+  logoUrl             String?  @map("logo_url")
+  website             String?
+  instagram           String?
+  defaultModelId      String?  @map("default_model_id") @db.Uuid
+  creditsRemaining    Int      @default(10) @map("credits_remaining")
+  onboardingCompleted Boolean  @default(false) @map("onboarding_completed")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  members       BrandMember[]
+  collections   Collection[]
+  modelProfiles ModelProfile[]
+  moodPresets   MoodPreset[]
+  subscriptions Subscription[]
+  creditLedger  CreditLedger[]
+  generationLogs GenerationLog[]
+
+  @@map("brands")
+}
+
+model BrandMember {
+  id        String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  brandId   String          @map("brand_id") @db.Uuid
+  userId    String          @map("user_id") @db.Uuid
+  role      BrandMemberRole @default(EDITOR)
+  invitedAt DateTime        @default(now()) @map("invited_at")
+  joinedAt  DateTime?       @map("joined_at")
+
+  brand Brand @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([brandId, userId])
+  @@map("brand_members")
+}
+
+model Collection {
+  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  brandId        String           @map("brand_id") @db.Uuid
+  name           String
+  season         String?
+  description    String?
+  modelProfileId String?          @map("model_profile_id") @db.Uuid
+  moodPresetId   String?          @map("mood_preset_id") @db.Uuid
+  coverImageUrl  String?          @map("cover_image_url")
+  shareToken     String?          @unique @map("share_token")
+  status         CollectionStatus @default(DRAFT)
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+
+  brand        Brand         @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  modelProfile ModelProfile? @relation(fields: [modelProfileId], references: [id])
+  moodPreset   MoodPreset?   @relation(fields: [moodPresetId], references: [id])
+  garments     Garment[]
+
+  @@index([brandId, status])
+  @@map("collections")
+}
+
+model Garment {
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  collectionId    String        @map("collection_id") @db.Uuid
+  name            String
+  referenceImage  String        @map("reference_image")
+  detectedType    GarmentType?  @map("detected_type")
+  detectedColor   String?       @map("detected_color")
+  detectedTexture String?       @map("detected_texture")
+  detectedStyle   String?       @map("detected_style")
+  customPrompt    String?       @map("custom_prompt")
+  sortOrder       Int           @default(0) @map("sort_order")
+  status          GarmentStatus @default(PENDING)
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  collection     Collection      @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  generatedImages GeneratedImage[]
+  generationLogs  GenerationLog[]
+
+  @@index([collectionId, status])
+  @@map("garments")
+}
+
+model GeneratedImage {
+  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  garmentId      String        @map("garment_id") @db.Uuid
+  imageUrl       String        @map("image_url")
+  thumbnailUrl   String?       @map("thumbnail_url")
+  previewUrl     String?       @map("preview_url")
+  variationType  VariationType @map("variation_type")
+  composition    Composition
+  generationMode GenerationMode @map("generation_mode")
+  framingType    FramingType   @map("framing_type")
+  promptUsed     String        @map("prompt_used")
+  negativePrompt String?       @map("negative_prompt")
+  seed           Int?
+  qualityScore   Float?        @map("quality_score")
+  width          Int           @default(2048)
+  height         Int           @default(2048)
+  status         ImageStatus   @default(GENERATING)
+  rejectedReason String?       @map("rejected_reason")
+  retryCount     Int           @default(0) @map("retry_count")
+  generatedAt    DateTime?     @map("generated_at")
+  createdAt      DateTime      @default(now()) @map("created_at")
+
+  garment Garment @relation(fields: [garmentId], references: [id], onDelete: Cascade)
+
+  @@index([garmentId, status])
+  @@map("generated_images")
+}
+
+model ModelProfile {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  brandId         String   @map("brand_id") @db.Uuid
+  name            String
+  referenceImages String[] @map("reference_images")
+  seedData        Json?    @map("seed_data")
+  hairColor       String?  @map("hair_color")
+  eyeColor        String?  @map("eye_color")
+  skinTone        String?  @map("skin_tone")
+  bodyType        String?  @map("body_type")
+  ageRange        String?  @map("age_range")
+  style           String?
+  isBrandDefault  Boolean  @default(false) @map("is_brand_default")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  brand       Brand        @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  collections Collection[]
+
+  @@map("model_profiles")
+}
+
+model MoodPreset {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  brandId         String?  @map("brand_id") @db.Uuid
+  name            String
+  slug            String   @unique
+  description     String?
+  promptTemplate  String   @map("prompt_template")
+  scenarioHints   Json?    @map("scenario_hints")
+  stylingHints    Json?    @map("styling_hints")
+  lightingHints   Json?    @map("lighting_hints")
+  thumbnailUrl    String?  @map("thumbnail_url")
+  isSystem        Boolean  @default(false) @map("is_system")
+  isActive        Boolean  @default(true) @map("is_active")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  brand       Brand?       @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  collections Collection[]
+
+  @@map("mood_presets")
+}
+
+model Subscription {
+  id                     String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  brandId                String             @map("brand_id") @db.Uuid
+  plan                   PlanType           @default(FREE)
+  creditsTotal           Int                @map("credits_total")
+  creditsUsed            Int                @default(0) @map("credits_used")
+  billingCycleStart      DateTime           @map("billing_cycle_start")
+  billingCycleEnd        DateTime           @map("billing_cycle_end")
+  paymentProvider        String?            @map("payment_provider")
+  externalSubscriptionId String?            @map("external_subscription_id")
+  externalCustomerId     String?            @map("external_customer_id")
+  priceInCents           Int?               @map("price_in_cents")
+  status                 SubscriptionStatus @default(ACTIVE)
+  canceledAt             DateTime?          @map("canceled_at")
+  createdAt              DateTime           @default(now()) @map("created_at")
+  updatedAt              DateTime           @updatedAt @map("updated_at")
+
+  brand Brand @relation(fields: [brandId], references: [id], onDelete: Cascade)
+
+  @@index([brandId, status])
+  @@map("subscriptions")
+}
+
+model CreditLedger {
+  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  brandId     String          @map("brand_id") @db.Uuid
+  amount      Int
+  balance     Int
+  operation   CreditOperation
+  description String?
+  referenceId String?         @map("reference_id")
+  createdAt   DateTime        @default(now()) @map("created_at")
+
+  brand Brand @relation(fields: [brandId], references: [id], onDelete: Cascade)
+
+  @@index([brandId, createdAt])
+  @@map("credit_ledger")
+}
+
+model GenerationLog {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  brandId         String   @map("brand_id") @db.Uuid
+  garmentId       String   @map("garment_id") @db.Uuid
+  provider        String   @default("fal.ai")
+  model           String?
+  promptSent      String   @map("prompt_sent")
+  negativePrompt  String?  @map("negative_prompt")
+  parameters      Json?
+  apiResponse     Json?    @map("api_response")
+  durationMs      Int?     @map("duration_ms")
+  creditsConsumed Int      @default(1) @map("credits_consumed")
+  error           String?
+  status          String   @default("pending")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  brand   Brand   @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  garment Garment @relation(fields: [garmentId], references: [id], onDelete: Cascade)
+
+  @@index([brandId, createdAt])
+  @@map("generation_logs")
+}
