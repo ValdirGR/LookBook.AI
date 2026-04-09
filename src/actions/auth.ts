@@ -89,7 +89,7 @@ export async function register(
   return { success: true };
 }
 
-export async function loginWithGoogle() {
+export async function loginWithGoogle(): Promise<void> {
   const supabase = await createClient();
 
   const { data, error } = await supabase.auth.signInWithOAuth({
@@ -100,7 +100,7 @@ export async function loginWithGoogle() {
   });
 
   if (error || !data.url) {
-    return { error: "Erro ao conectar com Google" };
+    redirect("/login?error=google_auth_failed");
   }
 
   redirect(data.url);
