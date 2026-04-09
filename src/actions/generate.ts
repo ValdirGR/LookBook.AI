@@ -82,7 +82,7 @@ export async function generateLookbook(
     const result: any = await fal.subscribe("fal-ai/flux/schnell", {
       input: {
         prompt: `${parsed.data.prompt}, high fashion, editorial photography, 8k resolution`,
-        image_size: "portrait_4_5",
+        image_size: "portrait_4_3",
         num_inference_steps: 4,
         num_images: 1,
         // if using an IP adapter or something similar, you'd pass garment.referenceImage 
