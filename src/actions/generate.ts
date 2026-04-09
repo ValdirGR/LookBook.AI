@@ -107,11 +107,11 @@ export async function generateLookbook(
         garmentId: garment.id,
         imageUrl: finalImageUrl,
         promptUsed: parsed.data.prompt,
-        status: "COMPLETED",
-        composition: "FULL_BODY" as Composition, // Placeholder ENUM mappings
-        generationMode: "TEXT_TO_IMAGE" as GenerationMode,
-        framingType: "PORTRAIT" as FramingType,
-        variationType: "PRIMARY" as VariationType,
+        status: "READY",
+        composition: "STANDING",
+        generationMode: "EDITORIAL",
+        framingType: "FULL_BODY",
+        variationType: "FRONTAL",
         width: result.images[0].width || 1024,
         height: result.images[0].height || 1280,
       }
