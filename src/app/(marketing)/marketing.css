@@ -120,7 +120,7 @@
   padding: var(--spacing-4xl, 4rem) 0;
   background-color: var(--color-lighter-gray, #f5f5f5);
 }
-:global(.dark) .how-it-works {
+.dark .how-it-works {
   background-color: var(--color-cream-dark, #1c1917);
 }
 .how-inner {
@@ -158,7 +158,7 @@
   color: var(--color-light-gray, #e5e5e5);
   margin-bottom: var(--spacing-md, 1rem);
 }
-:global(.dark) .how-step-number {
+.dark .how-step-number {
   color: var(--color-warm-gray-light, #a3a3a3);
 }
 .how-step-icon {
