@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useTransition } from "react";
 import Link from "next/link";
-import { MoreVertical, Edit2, Trash2, Image as ImageIcon } from "lucide-react";
+import { MoreVertical, Edit2, Trash2, Image as ImageIcon, FolderOpen } from "lucide-react";
 import { deleteCollection } from "@/actions/collections";
 import { cn } from "@/lib/utils";
 import type { Collection } from "@prisma/client";
@@ -40,75 +40,82 @@ export function CollectionCard({ collection }: CollectionCardProps) {
   };
 
   return (
-    <div className={cn("group flex flex-col rounded-xl border border-[var(--color-light-gray)] bg-white dark:bg-[#151413] shadow-sm hover:shadow-md transition-all duration-300", isPending && "opacity-50 pointer-events-none")}>
+    <div className={cn("group flex flex-col rounded-xl bg-[#151413] border border-[#1C1B1A] transition-all duration-300 hover:border-[#2E2D2A]", isPending && "opacity-50 pointer-events-none")}>
       
       {/* Cover Image Area */}
-      <Link href={`/collections/${collection.id}`} className="relative aspect-[4/3] bg-[var(--color-cream)] dark:bg-[#0A0A0A] overflow-hidden block rounded-t-xl">
+      <Link href={`/collections/${collection.id}`} className="relative aspect-[4/3] bg-[#0A0A0A] overflow-hidden block rounded-t-xl border-b border-[#1C1B1A]">
         {collection.coverImageUrl ? (
           <img 
             src={collection.coverImageUrl} 
             alt={collection.name} 
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80"
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center text-[var(--color-warm-gray)] transition-transform duration-700 group-hover:scale-105">
-            <ImageIcon strokeWidth={1} size={48} className="opacity-20 mb-2" />
-            <span className="text-xs uppercase tracking-widest opacity-50">Sem capa</span>
+          <div className="w-full h-full flex flex-col items-center justify-center text-[#2E2D2A] transition-transform duration-700 group-hover:scale-105 bg-[#151413]">
+            <FolderOpen strokeWidth={1.5} size={36} className="opacity-40" />
           </div>
         )}
 
         {/* Status Badge */}
-        <div className="absolute top-3 left-3">
-          <span className="px-2 py-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider rounded-md bg-white/90 dark:bg-black/80 backdrop-blur text-[var(--color-charcoal)] dark:text-[var(--color-cream)] border border-black/5 dark:border-white/10">
-            {collection.status === 'DRAFT' && <span className="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>}
-            {collection.status === 'ACTIVE' && <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-success)]"></span>}
-            {collection.status === 'ARCHIVED' && <span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>}
-            {collection.status}
+        <div className="absolute top-4 right-4">
+          <span className="px-2.5 py-1 text-[11px] font-medium rounded-full bg-[#1E1D1B] text-[#9B9590] border border-[#2E2D2A]">
+            {collection.status === 'ACTIVE' ? 'Ativa' : collection.status === 'DRAFT' ? 'Draft' : 'Arquivada'}
           </span>
         </div>
       </Link>
 
       {/* Content Area */}
-      <div className="p-4 flex items-start gap-3">
-        <Link href={`/collections/${collection.id}`} className="flex-1 min-w-0">
-          <h3 className="font-display text-sm font-semibold text-[var(--color-charcoal)] dark:text-[var(--color-cream)] truncate group-hover:text-[var(--color-rose-gold)] transition-colors">
-            {collection.name}
-          </h3>
-          <p className="text-xs text-[var(--color-warm-gray)] mt-1 truncate">
-            {collection.season || 'Sem temporada definida'}
-          </p>
-        </Link>
-        
-        {/* Menu Actions */}
-        <div className="relative shrink-0" ref={menuRef}>
-          <button 
-            onClick={(e) => { e.preventDefault(); setMenuOpen(!menuOpen); }}
-            className="p-1.5 rounded-md text-[var(--color-warm-gray)] hover:bg-[var(--color-light-gray)] hover:text-[var(--color-charcoal)] dark:hover:text-white transition-colors"
-            aria-label="Opções"
-          >
-            <MoreVertical size={16} />
-          </button>
-          
-          {menuOpen && (
-            <div className="absolute right-0 top-full mt-1 w-40 py-1 bg-white dark:bg-[#1c1b1a] border border-[var(--color-light-gray)] rounded-lg shadow-xl z-30">
+      <div className="p-4">
+        <Link href={`/collections/${collection.id}`} className="block w-full">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[15px] font-semibold text-white truncate">
+              {collection.name}
+            </h3>
+            
+            {/* Menu Actions (integrated properly for the dark mode) */}
+            <div className="relative shrink-0" ref={menuRef}>
               <button 
-                className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 text-[var(--color-charcoal)] dark:text-[var(--color-cream)] hover:bg-[var(--color-cream)] dark:hover:bg-[#2A2928] transition-colors"
-                onClick={() => {
-                  setMenuOpen(false);
-                }}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMenuOpen(!menuOpen); }}
+                className="p-1 rounded-md text-[#6B6561] hover:text-white transition-colors h-6 w-6 flex items-center justify-center"
               >
-                <Edit2 size={14} /> Editar
+                <MoreVertical size={16} />
               </button>
-              <button 
-                className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 text-[var(--color-error)] hover:bg-[var(--color-error-light)] transition-colors"
-                onClick={handleDelete}
-              >
-                <Trash2 size={14} /> Excluir
-              </button>
+              
+              {menuOpen && (
+                <div className="absolute right-0 top-full mt-1 w-40 py-1 bg-[#1A1918] border border-[#2E2D2A] rounded-lg shadow-xl z-30">
+                  <button 
+                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 text-[#E8E4DF] hover:bg-[#2A2928] transition-colors"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <Edit2 size={14} /> Editar
+                  </button>
+                  <button 
+                    className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 text-[#EF4444] hover:bg-[#2A2928] transition-colors"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleDelete();
+                    }}
+                  >
+                    <Trash2 size={14} /> Excluir
+                  </button>
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </div>
+          
+          <div className="flex items-center gap-2 text-xs text-[#6B6561] mt-1.5 font-medium">
+            <span>{collection.season || 'Sem temporada'}</span>
+            <span>•</span>
+            <span>0 peças</span>
+            <span>•</span>
+            <span>0 fotos</span>
+          </div>
+        </Link>
       </div>
     </div>
+  );
   );
 }

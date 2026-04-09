@@ -85,6 +85,18 @@
   --duration-slow: 400ms;
   --duration-slower: 600ms;
 
+  /* Palette for the new Dark/Gold aesthetic */
+  --dashboard-bg: #0A0A0A;
+  --dashboard-sidebar-bg: #0A0A0A;
+  --dashboard-card-bg: #151413;
+  --dashboard-border: #1C1B1A;
+  --dashboard-text-primary: #FFFFFF;
+  --dashboard-text-secondary: #9B9590;
+  
+  --color-primary-button: #F3E8DB;  /* Light beige/gold for primary actions */
+  --color-primary-button-text: #0A0A0A;
+  --color-primary-hover: #E3D2BA;
+
   /* Layout */
   --sidebar-width: 260px;
   --sidebar-collapsed: 72px;
@@ -112,6 +124,12 @@ body {
   line-height: 1.6;
   color: var(--color-charcoal);
   background-color: var(--color-cream);
+}
+
+/* Force dark theme layout globally if applied directly in dashboard */
+.dashboard-layout {
+  color: var(--dashboard-text-primary);
+  background-color: var(--dashboard-bg);
 }
 
 /* --- DARK MODE --- */
@@ -218,12 +236,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-primary {
-  background-color: var(--color-charcoal);
-  color: var(--color-cream);
+  background-color: var(--color-primary-button);
+  color: var(--color-primary-button-text);
   border-radius: var(--radius-lg);
+  font-weight: 500;
 }
 .btn-primary:hover:not(:disabled) {
-  background-color: var(--color-charcoal-light);
+  background-color: var(--color-primary-hover);
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
@@ -232,11 +251,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .dark .btn-primary {
-  background-color: var(--color-cream);
-  color: #0F0E0D;
+  background-color: var(--color-primary-button);
+  color: var(--color-primary-button-text);
 }
 .dark .btn-primary:hover:not(:disabled) {
-  background-color: var(--color-cream-dark);
+  background-color: var(--color-primary-hover);
 }
 
 .btn-secondary {
