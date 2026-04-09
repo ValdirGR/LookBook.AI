@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutGrid,
   FolderOpen,
   Image,
   Sparkles,
@@ -13,6 +12,7 @@ import {
   Palette,
   ChevronLeft,
   ChevronRight,
+  Menu,
 } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "@/components/shared/logo";
@@ -20,7 +20,6 @@ import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { cn } from "@/lib/utils";
 
 const sidebarLinks = [
-  { label: "Dashboard", href: "/collections", icon: LayoutGrid },
   { label: "Coleções", href: "/collections", icon: FolderOpen },
   { label: "Galeria", href: "/gallery", icon: Image },
   { label: "Gerar", href: "/generate", icon: Sparkles },
@@ -39,12 +38,25 @@ export function DashboardLayoutClient({
   children: React.ReactNode;
 }) {
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <div className="dashboard-layout">
-      <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="sidebar-overlay"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+      <Sidebar
+        collapsed={collapsed}
+        mobileOpen={mobileOpen}
+        onToggle={() => setCollapsed(!collapsed)}
+        onMobileClose={() => setMobileOpen(false)}
+      />
       <div className={cn("dashboard-main", collapsed && "dashboard-main-collapsed")}>
-        <Topbar />
+        <Topbar onMobileMenuToggle={() => setMobileOpen(!mobileOpen)} />
         <main className="dashboard-content">{children}</main>
       </div>
     </div>
@@ -53,15 +65,23 @@ export function DashboardLayoutClient({
 
 function Sidebar({
   collapsed,
+  mobileOpen,
   onToggle,
+  onMobileClose,
 }: {
   collapsed: boolean;
+  mobileOpen: boolean;
   onToggle: () => void;
+  onMobileClose: () => void;
 }) {
   const pathname = usePathname();
 
   return (
-    <aside className={cn("sidebar", collapsed && "sidebar-collapsed")}>
+    <aside className={cn(
+      "sidebar",
+      collapsed && "sidebar-collapsed",
+      mobileOpen && "sidebar-mobile-open"
+    )}>
       <div className="sidebar-header">
         <Logo size={collapsed ? "sm" : "md"} variant={collapsed ? "mark" : "full"} />
       </div>
@@ -113,12 +133,18 @@ function Sidebar({
   );
 }
 
-function Topbar() {
+function Topbar({ onMobileMenuToggle }: { onMobileMenuToggle: () => void }) {
   return (
     <header className="topbar">
       <div className="topbar-inner">
         <div className="topbar-left">
-          <h1 className="topbar-title">Dashboard</h1>
+          <button
+            className="mobile-menu-btn"
+            onClick={onMobileMenuToggle}
+            aria-label="Abrir menu"
+          >
+            <Menu size={20} />
+          </button>
         </div>
         <div className="topbar-right">
           <ThemeToggle />

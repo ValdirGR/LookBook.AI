@@ -12,8 +12,16 @@ export function CollectionsClientView({ collections }: { collections: Collection
 
   return (
     <>
-      <div className="absolute top-8 right-8 z-10 hidden sm:block">
-        <Button onClick={() => setIsDialogOpen(true)} variant="primary" size="md">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="font-display text-2xl text-[var(--color-charcoal)] dark:text-[var(--color-cream)]">
+            Suas Coleções
+          </h1>
+          <p className="text-sm text-[var(--color-warm-gray)] mt-1">
+            Organize suas peças em coleções e gere lookbooks editoriais.
+          </p>
+        </div>
+        <Button onClick={() => setIsDialogOpen(true)} variant="primary" size="md" className="hidden sm:flex">
           <FolderPlus size={16} />
           Nova Coleção
         </Button>

@@ -69,39 +69,37 @@ export function CollectionCard({ collection }: CollectionCardProps) {
       </Link>
 
       {/* Content Area */}
-      <div className="p-4 flex gap-4">
+      <div className="p-5 flex items-start gap-3">
         <Link href={`/collections/${collection.id}`} className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-display text-lg text-[var(--color-charcoal)] dark:text-[var(--color-cream)] truncate group-hover:text-[var(--color-rose-gold)] transition-colors">
-              {collection.name}
-            </h3>
-          </div>
-          <p className="text-sm text-[var(--color-warm-gray)] truncate">
+          <h3 className="font-display text-base font-semibold text-[var(--color-charcoal)] dark:text-[var(--color-cream)] truncate group-hover:text-[var(--color-rose-gold)] transition-colors leading-tight">
+            {collection.name}
+          </h3>
+          <p className="text-xs text-[var(--color-warm-gray)] mt-1.5 truncate">
             {collection.season || 'Sem temporada definida'}
           </p>
-          
-          <div className="mt-3 text-xs text-[var(--color-warm-gray-light)] line-clamp-2">
-            {collection.description ? collection.description : 'Adicione peças a esta coleção para começar a gerar.'}
-          </div>
+          {collection.description && (
+            <p className="mt-2.5 text-xs text-[var(--color-warm-gray-light)] line-clamp-2 leading-relaxed">
+              {collection.description}
+            </p>
+          )}
         </Link>
         
         {/* Menu Actions */}
-        <div className="relative" ref={menuRef}>
+        <div className="relative shrink-0" ref={menuRef}>
           <button 
             onClick={(e) => { e.preventDefault(); setMenuOpen(!menuOpen); }}
             className="p-1.5 rounded-md text-[var(--color-warm-gray)] hover:bg-[var(--color-light-gray)] hover:text-[var(--color-charcoal)] dark:hover:text-white transition-colors"
             aria-label="Opções"
           >
-            <MoreVertical size={18} />
+            <MoreVertical size={16} />
           </button>
           
           {menuOpen && (
-            <div className="absolute right-0 top-10 w-40 py-1 bg-white dark:bg-[#1c1b1a] border border-[var(--color-light-gray)] rounded-lg shadow-xl z-20 animate-in fade-in slide-in-from-top-2">
+            <div className="absolute right-0 top-full mt-1 w-40 py-1 bg-white dark:bg-[#1c1b1a] border border-[var(--color-light-gray)] rounded-lg shadow-xl z-20">
               <button 
                 className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 text-[var(--color-charcoal)] dark:text-[var(--color-cream)] hover:bg-[var(--color-cream)] dark:hover:bg-[#2A2928] transition-colors"
                 onClick={() => {
                   setMenuOpen(false);
-                  // TODO: trigger edit mode
                 }}
               >
                 <Edit2 size={14} /> Editar
