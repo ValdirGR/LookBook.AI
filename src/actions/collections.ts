@@ -87,11 +87,7 @@ export async function deleteCollection(collectionId: string): Promise<ActionStat
       return { error: "Coleção não encontrada." };
     }
 
-    // Checking if user has permission
-    const hasPermission = collection.brand.members.some(member => member.userId ===
-      (collection.brand.members.find(m => m.user?.authId === user.id)?.userId || "")
-    );
-    // Actually, getting Prisma user ID is safer
+    // Check if user has permission
     const dbUser = await prisma.user.findUnique({ where: { authId: user.id } });
     if (!dbUser || !collection.brand.members.some(m => m.userId === dbUser.id)) {
       return { error: "Permissão negada." };
