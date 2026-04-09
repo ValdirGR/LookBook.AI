@@ -30,7 +30,7 @@ export async function login(
   });
 
   if (!parsed.success) {
-    return { error: parsed.error.errors[0].message };
+    return { error: parsed.error.issues[0].message };
   }
 
   const supabase = await createClient();
@@ -63,7 +63,7 @@ export async function register(
   });
 
   if (!parsed.success) {
-    return { error: parsed.error.errors[0].message };
+    return { error: parsed.error.issues[0].message };
   }
 
   const supabase = await createClient();
