@@ -40,10 +40,10 @@ export function CollectionCard({ collection }: CollectionCardProps) {
   };
 
   return (
-    <div className={cn("group flex flex-col rounded-xl border border-[var(--color-light-gray)] bg-white dark:bg-[#151413] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden", isPending && "opacity-50 pointer-events-none")}>
+    <div className={cn("group flex flex-col rounded-xl border border-[var(--color-light-gray)] bg-white dark:bg-[#151413] shadow-sm hover:shadow-md transition-all duration-300", isPending && "opacity-50 pointer-events-none")}>
       
       {/* Cover Image Area */}
-      <Link href={`/collections/${collection.id}`} className="relative aspect-[4/3] bg-[var(--color-cream)] dark:bg-[#0A0A0A] overflow-hidden block">
+      <Link href={`/collections/${collection.id}`} className="relative aspect-[4/3] bg-[var(--color-cream)] dark:bg-[#0A0A0A] overflow-hidden block rounded-t-xl">
         {collection.coverImageUrl ? (
           <img 
             src={collection.coverImageUrl} 
@@ -69,19 +69,14 @@ export function CollectionCard({ collection }: CollectionCardProps) {
       </Link>
 
       {/* Content Area */}
-      <div className="p-5 flex items-start gap-3">
+      <div className="p-4 flex items-start gap-3">
         <Link href={`/collections/${collection.id}`} className="flex-1 min-w-0">
-          <h3 className="font-display text-base font-semibold text-[var(--color-charcoal)] dark:text-[var(--color-cream)] truncate group-hover:text-[var(--color-rose-gold)] transition-colors leading-tight">
+          <h3 className="font-display text-sm font-semibold text-[var(--color-charcoal)] dark:text-[var(--color-cream)] truncate group-hover:text-[var(--color-rose-gold)] transition-colors">
             {collection.name}
           </h3>
-          <p className="text-xs text-[var(--color-warm-gray)] mt-1.5 truncate">
+          <p className="text-xs text-[var(--color-warm-gray)] mt-1 truncate">
             {collection.season || 'Sem temporada definida'}
           </p>
-          {collection.description && (
-            <p className="mt-2.5 text-xs text-[var(--color-warm-gray-light)] line-clamp-2 leading-relaxed">
-              {collection.description}
-            </p>
-          )}
         </Link>
         
         {/* Menu Actions */}
@@ -95,7 +90,7 @@ export function CollectionCard({ collection }: CollectionCardProps) {
           </button>
           
           {menuOpen && (
-            <div className="absolute right-0 top-full mt-1 w-40 py-1 bg-white dark:bg-[#1c1b1a] border border-[var(--color-light-gray)] rounded-lg shadow-xl z-20">
+            <div className="absolute right-0 top-full mt-1 w-40 py-1 bg-white dark:bg-[#1c1b1a] border border-[var(--color-light-gray)] rounded-lg shadow-xl z-30">
               <button 
                 className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 text-[var(--color-charcoal)] dark:text-[var(--color-cream)] hover:bg-[var(--color-cream)] dark:hover:bg-[#2A2928] transition-colors"
                 onClick={() => {
