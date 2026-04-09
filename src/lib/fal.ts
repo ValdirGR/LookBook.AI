@@ -1,4 +1,4 @@
-import * as fal from "@fal-ai/client";
+import { fal } from "@fal-ai/client";
 
 fal.config({
   credentials: process.env.FAL_KEY,
@@ -27,11 +27,7 @@ export async function generateImage(
   const result = await fal.subscribe("fal-ai/flux-pro/v1.1", {
     input: {
       prompt: params.prompt,
-      image_url: params.imageUrl,
-      image_size: {
-        width: params.width ?? 2048,
-        height: params.height ?? 2048,
-      },
+      image_size: "portrait_4_3",
       num_images: 1,
       seed: params.seed,
       enable_safety_checker: true,

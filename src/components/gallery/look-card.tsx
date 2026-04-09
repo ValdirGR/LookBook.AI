@@ -12,7 +12,7 @@ interface LookCardProps {
 
 export function LookCard({ look, onClick, showCollectionBadge, collectionName }: LookCardProps) {
   // If still generating or failed, we show placeholders
-  if (look.status === "PENDING") {
+  if (look.status === "GENERATING") {
     return (
       <div className="relative break-inside-avoid mb-6 rounded-2xl bg-[var(--color-cream)] dark:bg-[#1a1918] aspect-[3/4] flex flex-col items-center justify-center p-6 text-center border border-[var(--color-light-gray)]">
         <Clock size={32} className="text-[var(--color-rose-gold)] animate-pulse mb-3" />

@@ -12,7 +12,8 @@ interface CollectionDialogProps {
   onClose: () => void;
 }
 
-const initialState = {};
+type CollectionState = { success?: boolean; error?: string };
+const initialState: CollectionState = {};
 
 export function CollectionDialog({ open, onClose }: CollectionDialogProps) {
   const [state, action, isPending] = useActionState(createCollection, initialState);
@@ -28,9 +29,8 @@ export function CollectionDialog({ open, onClose }: CollectionDialogProps) {
       setName("");
       setSeason("");
       setDescription("");
-      state.success = false;
     }
-  }, [state.success, onClose, state]);
+  }, [state.success, onClose]);
 
   return (
     <Dialog open={open} onClose={onClose} className="max-w-md">
