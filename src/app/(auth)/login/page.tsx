@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { Suspense, useActionState, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle } from "lucide-react";
@@ -10,7 +10,7 @@ import { login, loginWithGoogle, type AuthState } from "@/actions/auth";
 
 const initialState: AuthState = {};
 
-export default function LoginPage() {
+function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [state, formAction, isPending] = useActionState(login, initialState);
   const searchParams = useSearchParams();
@@ -176,5 +176,13 @@ export default function LoginPage() {
         }
       `}</style>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }
